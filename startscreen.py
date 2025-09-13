@@ -33,7 +33,7 @@ def show_directions_screen(screen):
         "Directions:",
         "Arrow keys or WASD to move",
         "Spacebar to shoot",
-        "Avoid asteroids!",
+        "Avoid 'Stroids!",
         "Press any key to return"
     ]
     screen.fill((0, 0, 0))
