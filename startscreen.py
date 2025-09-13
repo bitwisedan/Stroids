@@ -54,18 +54,25 @@ def show_directions_screen(screen):
 import pygame
 import sys
 
-def show_gameover_screen(screen):
+def show_gameover_screen(screen, score=0):
+    title_font = pygame.font.SysFont(None, 72)
     font = pygame.font.SysFont(None, 48)
-    gameover_text = font.render("Game Over!", True, (255, 0, 0))
+    small_font = pygame.font.SysFont(None, 36)
+    
+    gameover_text = title_font.render("Game Over!", True, (255, 0, 0))
+    score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
     restart_text = font.render("Restart", True, (255, 255, 255))
     quit_text = font.render("Quit", True, (255, 255, 255))
-    gameover_rect = gameover_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 - 60))
-    restart_rect = restart_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2))
-    quit_rect = quit_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 + 60))
+    
+    gameover_rect = gameover_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 - 100))
+    score_rect = score_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 - 30))
+    restart_rect = restart_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 + 40))
+    quit_rect = quit_text.get_rect(center=(screen.get_width()//2, screen.get_height()//2 + 100))
 
     while True:
         screen.fill((0, 0, 0))
         screen.blit(gameover_text, gameover_rect)
+        screen.blit(score_text, score_rect)
         screen.blit(restart_text, restart_rect)
         screen.blit(quit_text, quit_rect)
         pygame.display.flip()

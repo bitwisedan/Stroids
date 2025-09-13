@@ -1,11 +1,12 @@
 import pygame
+import sys
 from constants import *
 from player import *
 from asteroid import *
-import sys
 from asteroidfield import *
 from shot import *
 from startscreen import *
+from score import Score
 
 updateable = pygame.sprite.Group()
 drawable = pygame.sprite.Group()
@@ -31,6 +32,7 @@ def main():
         if choice == "start":
             player = Player((SCREEN_WIDTH / 2), (SCREEN_HEIGHT /2))
             asteroidfield = AsteroidField()
+            score = Score()
             while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -39,6 +41,7 @@ def main():
                 updateable.update(dt)
                 for obj in drawable:
                     obj.draw(screen)
+                score.draw(screen)
                 game_over = False
                 for obj in asteroids:
                     if player.collision(obj):
@@ -48,18 +51,20 @@ def main():
                     for shot in shots:
                         if obj.collision(shot):
                             new_asteroids = obj.split()
+                            score.add(10)  # Award 10 points for each asteroid destroyed
                             shot.kill()
                             break
                 pygame.display.flip()
                 dt = clock.tick(60) / 1000.0
                 if game_over:
-                    result = show_gameover_screen(screen)
+                    result = show_gameover_screen(screen, score.get_score())
                     if result == "restart":
                         # Clear all groups for a fresh start
                         updateable.empty()
                         drawable.empty()
                         asteroids.empty()
                         shots.empty()
+                        score.reset()
                         break  # Restart game loop
 
 
