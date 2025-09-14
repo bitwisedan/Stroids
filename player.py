@@ -40,9 +40,15 @@ class Player(CircleShape):
                 return self.shoot()
                 
         
+    def clamp_to_screen(self):
+        # Keep player on screen
+        self.position.x = max(self.radius, min(SCREEN_WIDTH - self.radius, self.position.x))
+        self.position.y = max(self.radius, min(SCREEN_HEIGHT - self.radius, self.position.y))
+        
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
+        self.clamp_to_screen()
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
