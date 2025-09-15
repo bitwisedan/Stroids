@@ -51,36 +51,31 @@ def main():
                 # Clear screen with black
                 screen.fill((0, 0, 0))
                 
-                # Update and draw starfield based on player movement
                 if hasattr(player, 'velocity'):
                     starfield.update(player.velocity.x * 0.1, player.velocity.y * 0.1)
                 starfield.draw(screen)
                 
-                # Update game objects
                 updateable.update(dt)
+                score.update(time.time())
                 
-                # Update score multiplier based on time
-                current_time = time.time()
-                score.update(current_time)
-                
-                # Draw all objects
                 for obj in drawable:
                     obj.draw(screen)
                 score.draw(screen)
+                player.draw_lives(screen)
                 
                 game_over = False
-                # Check for player-asteroid collisions
-                for obj in asteroids:
-                    if player.collision(obj):
-                        game_over = True
-                        break
+                if not player.invincible:
+                    for obj in asteroids:
+                        if player.collision(obj):
+                            if player.lose_life():
+                                game_over = True
+                            break
                         
-                # Check for shot-asteroid collisions
                 for obj in asteroids:
                     for shot in shots:
                         if obj.collision(shot):
                             obj.split()
-                            score.add(10)  # Award 10 points (with multiplier) for each asteroid destroyed
+                            score.add(10)
                             shot.kill()
                             break
                 pygame.display.flip()
