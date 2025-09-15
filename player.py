@@ -1,7 +1,8 @@
 import pygame
+import math
 from constants import *
-from circleshape import *
 from shot import *
+from circleshape import CircleShape
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -9,18 +10,28 @@ class Player(CircleShape):
         self.rotation = 0
         self.timer = 0
 
-    def triangle(self):
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
-        a = self.position + forward * self.radius
-        b = self.position - forward * self.radius - right
-        c = self.position - forward * self.radius + right
-        return [a, b, c]
+    def get_triangle_vertices(self):
+        forward = pygame.Vector2(0, -1).rotate(-self.rotation)
+        right = pygame.Vector2(1, 0).rotate(-self.rotation)
+        
+        front = self.position + forward * self.radius * 1.5
+        back_left = self.position - forward * self.radius - right * self.radius
+        back_right = self.position - forward * self.radius + right * self.radius
+        
+        return [front, back_left, back_right]
 
     def draw(self, screen):
-        pygame.draw.polygon(screen,(255, 255, 255), self.triangle(), 2)
+        # Get triangle vertices
+        v = self.get_triangle_vertices()
+        vertices = [(int(p.x), int(p.y)) for p in v]
+        
+        # Draw filled triangle
+        pygame.draw.polygon(screen, (255, 255, 255), vertices)
+        
+        # Draw outline
+        pygame.draw.polygon(screen, (200, 200, 200), vertices, 1)
 
-    def rotate(self,dt):
+    def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
 
     def update(self, dt):
@@ -41,18 +52,18 @@ class Player(CircleShape):
                 
         
     def clamp_to_screen(self):
-        # Keep player on screen
         self.position.x = max(self.radius, min(SCREEN_WIDTH - self.radius, self.position.x))
         self.position.y = max(self.radius, min(SCREEN_HEIGHT - self.radius, self.position.y))
         
     def move(self, dt):
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        self.position += forward * PLAYER_SPEED * dt
+        forward = pygame.Vector2(0, -1).rotate(-self.rotation)
+        self.velocity = forward * PLAYER_SPEED * dt
+        self.position += self.velocity
         self.clamp_to_screen()
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        # Use the same rotation direction as the player's movement
+        forward = pygame.Vector2(0, -1).rotate(-self.rotation)
         shot.velocity = forward * PLAYER_SHOOT_SPEED
-
         return shot

@@ -7,6 +7,7 @@ from asteroidfield import *
 from shot import *
 from startscreen import *
 from score import Score
+from starfield import Starfield
 
 updateable = pygame.sprite.Group()
 drawable = pygame.sprite.Group()
@@ -24,6 +25,10 @@ def main():
     dt = 0
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption('Stroids')
+    
+    # Create starfield background
+    starfield = Starfield(num_stars=150)
     while True:
         choice = show_start_screen(screen)
         if choice == "directions":
@@ -37,7 +42,15 @@ def main():
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
+                # Clear screen with black
                 screen.fill((0, 0, 0))
+                
+                # Update and draw starfield based on player movement
+                if hasattr(player, 'velocity'):
+                    starfield.update(player.velocity.x * 0.1, player.velocity.y * 0.1)
+                starfield.draw(screen)
+                
+                # Update game objects
                 updateable.update(dt)
                 for obj in drawable:
                     obj.draw(screen)
