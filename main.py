@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 from constants import *
 from player import *
 from asteroid import *
@@ -52,19 +53,29 @@ def main():
                 
                 # Update game objects
                 updateable.update(dt)
+                
+                # Update score multiplier based on time
+                current_time = time.time()
+                score.update(current_time)
+                
+                # Draw all objects
                 for obj in drawable:
                     obj.draw(screen)
                 score.draw(screen)
+                
                 game_over = False
+                # Check for player-asteroid collisions
                 for obj in asteroids:
                     if player.collision(obj):
                         game_over = True
                         break
+                        
+                # Check for shot-asteroid collisions
                 for obj in asteroids:
                     for shot in shots:
                         if obj.collision(shot):
-                            new_asteroids = obj.split()
-                            score.add(10)  # Award 10 points for each asteroid destroyed
+                            obj.split()
+                            score.add(10)  # Award 10 points (with multiplier) for each asteroid destroyed
                             shot.kill()
                             break
                 pygame.display.flip()
