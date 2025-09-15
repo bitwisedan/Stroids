@@ -9,6 +9,7 @@ from shot import *
 from startscreen import *
 from score import Score
 from starfield import Starfield
+from countdown import show_countdown
 
 updateable = pygame.sprite.Group()
 drawable = pygame.sprite.Group()
@@ -39,6 +40,10 @@ def main():
             player = Player((SCREEN_WIDTH / 2), (SCREEN_HEIGHT /2))
             asteroidfield = AsteroidField()
             score = Score()
+            
+            # Show countdown with starfield and player in background
+            if not show_countdown(screen, starfield, player):
+                return  # User quit during countdown
             while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -88,8 +93,23 @@ def main():
                         drawable.empty()
                         asteroids.empty()
                         shots.empty()
-                        score.reset()
-                        break  # Restart game loop
+                        
+                        # Reinitialize game objects
+                        player = Player((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+                        asteroidfield = AsteroidField()
+                        score = Score()
+                        
+                        # Show countdown with starfield and player in background
+                        if not show_countdown(screen, starfield, player):
+                            break  # User quit during countdown, go back to start screen
+                        
+                        # Reset game loop variables
+                        dt = 0
+                        game_over = False
+                        continue  # Continue with the new game state
+                    else:
+                        # If not restarting, go back to start screen
+                        break
 
 
 if __name__ == "__main__":
