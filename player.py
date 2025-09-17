@@ -100,7 +100,9 @@ class Player(CircleShape):
         self.clamp_to_screen()
 
     def shoot(self):
-        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
+        # Get the front vertex of the player's triangle
+        front_vertex = self.get_triangle_vertices()[0]
+        shot = Shot(front_vertex.x, front_vertex.y, SHOT_RADIUS)
         # Use the same rotation direction as the player's movement
         forward = pygame.Vector2(0, -1).rotate(-self.rotation)
         shot.velocity = forward * PLAYER_SHOOT_SPEED
